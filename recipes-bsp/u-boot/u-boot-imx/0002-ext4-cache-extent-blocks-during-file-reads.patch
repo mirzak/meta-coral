@@ -1,0 +1,145 @@
+From 2fc9037e044a75991f5b1b2f682f2961dc0c09ed Mon Sep 17 00:00:00 2001
+From: Matt Madison <matt@madison.systems>
+Date: Sat, 19 Aug 2017 08:46:46 -0700
+Subject: [PATCH 2/2] ext4: cache extent blocks during file reads
+
+A simpler and less-efficient approach to solving
+the problem with extent index blocks than what
+was in fc0fc50f38a4d7d0554558076a79dfe8b0d78cd5,
+but one that does not break write operations.
+
+Signed-off-by: Matt Madison <matt@madison.systems>
+
+Upstream-Status: Backport
+Signed-off-by: Mirza Krak <mirza@mkrak.org>
+
+---
+ fs/ext4/ext4_common.c | 65 +++++++++++++++++++++++++++++++++++++++++--
+ fs/ext4/ext4_common.h |  1 +
+ fs/ext4/ext4fs.c      |  6 +++-
+ 3 files changed, 69 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ext4/ext4_common.c b/fs/ext4/ext4_common.c
+index 621c61e5c7..5da3059c4d 100644
+--- a/fs/ext4/ext4_common.c
++++ b/fs/ext4/ext4_common.c
+@@ -1509,6 +1509,68 @@ void ext4fs_allocate_blocks(struct ext2_inode *file_inode,
+
+ #endif
+
++struct ext4_extentblk_node {
++	struct list_head lh;
++	unsigned long long block;
++	void *buf;
++};
++static LIST_HEAD(ext4_extentblk_list);
++static int ext4_extcache_enabled = 0;
++
++static void ext4_extentcache_clear(void)
++{
++	struct ext4_extentblk_node *node, *tmp;
++	list_for_each_entry_safe(node, tmp, &ext4_extentblk_list, lh) {
++		list_del(&node->lh);
++		free(node);
++	}
++}
++
++void ext4fs_cache_extent_blocks(int onoff) {
++
++	if (ext4_extcache_enabled != onoff)
++		ext4_extentcache_clear();
++	ext4_extcache_enabled = onoff;
++	debug("ext4fs extent caching now %s\n", onoff ? "ON" : "OFF");
++}
++
++static int extentcache_read(unsigned long long block,
++			    int log2_blksz, int blksz,
++			    char *buf)
++{
++	struct ext4_extentblk_node *node, *new;
++
++	if (ext4_extcache_enabled) {
++		list_for_each_entry(node, &ext4_extentblk_list, lh)
++			if (node->block == block) {
++				memcpy(buf, node->buf, blksz);
++				debug("extent cache hit for %llu\n", block);
++				return 1;
++			} else if (node->block > block)
++				break;
++		debug("extent cache miss for %llu\n", block);
++	}
++	if (!ext4fs_devread((lbaint_t)block << log2_blksz, 0, blksz, buf))
++		return 0;
++	if (ext4_extcache_enabled) {
++		new = malloc(sizeof(*new) + blksz);
++		if (!new) {
++			debug("extent cache node allocation failure\n");
++			return 1;
++		}
++		new->block = block;
++		new->buf = new + 1;
++		memcpy(new + 1, buf, blksz);
++		list_for_each_entry(node, &ext4_extentblk_list, lh)
++			if (node->block > new->block) {
++				list_add_tail(&new->lh, &node->lh);
++				return 1;
++			}
++		list_add_tail(&new->lh, &ext4_extentblk_list);
++	}
++	return 1;
++}
++
+ static struct ext4_extent_header *ext4fs_get_extent_block
+ 	(struct ext2_data *data, char *buf,
+ 		struct ext4_extent_header *ext_block,
+@@ -1540,8 +1602,7 @@ static struct ext4_extent_header *ext4fs_get_extent_block
+ 		block = le16_to_cpu(index[i].ei_leaf_hi);
+ 		block = (block << 32) + le32_to_cpu(index[i].ei_leaf_lo);
+
+-		if (ext4fs_devread((lbaint_t)block << log2_blksz, 0, blksz,
+-				   buf))
++		if (extentcache_read(block, log2_blksz, blksz, buf))
+ 			ext_block = (struct ext4_extent_header *)buf;
+ 		else
+ 			return NULL;
+diff --git a/fs/ext4/ext4_common.h b/fs/ext4/ext4_common.h
+index 04d56028a0..3ad5fd2cc8 100644
+--- a/fs/ext4/ext4_common.h
++++ b/fs/ext4/ext4_common.h
+@@ -56,6 +56,7 @@ int ext4fs_find_file(const char *path, struct ext2fs_node *rootnode,
+ 			struct ext2fs_node **foundnode, int expecttype);
+ int ext4fs_iterate_dir(struct ext2fs_node *dir, char *name,
+ 			struct ext2fs_node **fnode, int *ftype);
++void ext4fs_cache_extent_blocks(int onoff);
+
+ #if defined(CONFIG_EXT4_WRITE)
+ uint32_t ext4fs_div_roundup(uint32_t size, uint32_t n);
+diff --git a/fs/ext4/ext4fs.c b/fs/ext4/ext4fs.c
+index 7187dcfb05..5e606f8b97 100644
+--- a/fs/ext4/ext4fs.c
++++ b/fs/ext4/ext4fs.c
+@@ -217,16 +217,20 @@ int ext4_read_file(const char *filename, void *buf, loff_t offset, loff_t len,
+ 	loff_t file_len;
+ 	int ret;
+
++	ext4fs_cache_extent_blocks(1);
+ 	ret = ext4fs_open(filename, &file_len);
+ 	if (ret < 0) {
+ 		printf("** File not found %s **\n", filename);
++		ext4fs_cache_extent_blocks(0);
+ 		return -1;
+ 	}
+
+ 	if (len == 0)
+ 		len = file_len;
+
+-	return ext4fs_read(buf, offset, len, len_read);
++	ret = ext4fs_read(buf, offset, len, len_read);
++	ext4fs_cache_extent_blocks(0);
++	return ret;
+ }
+
+ int ext4fs_uuid(char *uuid_str)
+--
+2.21.0
+
