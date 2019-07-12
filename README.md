@@ -32,7 +32,7 @@ to that location:
 
 Initialize repo manifest:
 
-    repo init -u https://github.com/Freescale/fsl-community-bsp-platform -b thud
+    repo init -u https://github.com/Freescale/fsl-community-bsp-platform -b master
 
 Fetch layers in manifest:
 
