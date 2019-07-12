@@ -12,11 +12,11 @@ and/or Yocto.
 This layer depends on:
 
     URI: git://git.openembedded.org/openembedded-core
-    branch: master
+    branch: warrior
     revision: HEAD
 
     URI: https://github.com/Freescale/meta-freescale.git
-    branch: master
+    branch: warrior
     revision: HEAD
 
 Quick start
@@ -32,7 +32,7 @@ to that location:
 
 Initialize repo manifest:
 
-    repo init -u https://github.com/Freescale/fsl-community-bsp-platform -b master
+    repo init -u https://github.com/Freescale/fsl-community-bsp-platform -b warrior
 
 Fetch layers in manifest:
 
