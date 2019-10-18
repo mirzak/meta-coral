@@ -1,11 +1,6 @@
 OpenEmbedded/Yocto BSP layer for Google Coral Dev Board
 =======================================================
 
-**NOTE!** This layer is still an work in progress and this might not be the final location
-nor are there any guarantees that I will not rebase the repository before I
-consider it complete. If you are interested in this repository please open
-a issue to get an status update.
-
 This layer provides support for Coral Dev Board for use with OpenEmbedded
 and/or Yocto.
 
