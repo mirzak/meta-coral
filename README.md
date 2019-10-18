@@ -14,6 +14,10 @@ This layer depends on:
     branch: master
     revision: HEAD
 
+    URL: https://github.com/kraj/meta-clang
+    branch: master
+    revision: HEAD
+
 Quick start
 -----------
 
@@ -33,6 +37,10 @@ Fetch layers in manifest:
 
     repo sync
 
+Clone `meta-clang`:
+
+    git clone https://github.com/kraj/meta-clang.git sources/meta-clang
+
 Clone `meta-coral`:
 
     git clone https://github.com/mirzak/meta-coral.git sources/meta-coral
@@ -40,6 +48,11 @@ Clone `meta-coral`:
 Setup the environment:
 
     MACHINE=coral-dev DISTRO=fslc-wayland source ./setup-environment build
+
+Add the `meta-clang` layer to bblayers.conf:
+
+    echo 'BBLAYERS += "${BSPDIR}/sources/meta-clang"' >> conf/bblayers.conf
+
 
 Add the `meta-coral` layer to bblayers.conf:
 
