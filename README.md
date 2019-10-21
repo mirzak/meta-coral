@@ -43,7 +43,7 @@ Clone `meta-clang`:
 
 Clone `meta-coral`:
 
-    git clone https://github.com/mirzak/meta-coral.git sources/meta-coral
+    git clone https://github.com/mirzak/meta-coral.git sources/meta-coral -b warrior
 
 Setup the environment:
 
