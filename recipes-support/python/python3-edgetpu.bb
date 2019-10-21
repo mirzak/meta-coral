@@ -34,3 +34,5 @@ do_install_append_aarch64() {
 }
 
 BBCLASSEXTEND = "native nativesdk"
+
+INSANE_SKIP_${PN} += "already-stripped"
