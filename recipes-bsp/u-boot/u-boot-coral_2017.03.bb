@@ -56,4 +56,4 @@ do_deploy_append_mx8m() {
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "coral-dev"
 
-DEPENDS_coral-dev += "cora-boot-script"
+DEPENDS_coral-dev += "coral-boot-script"
