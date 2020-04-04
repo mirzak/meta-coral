@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Mirza Krak
+# Copyright (C) 2019-2020 Mirza Krak
 #
 # Based on:
 #    u-boot-imx_2017.03.bb
@@ -15,13 +15,13 @@ PROVIDES += "u-boot"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRCBRANCH = "release-chef"
+SRCBRANCH = "release-day"
 SRC_URI = "\
     git://coral.googlesource.com/uboot-imx;protocol=https;branch=${SRCBRANCH} \
     file://0001-tools-allow-to-override-python.patch \
     file://0002-ext4-cache-extent-blocks-during-file-reads.patch \
 "
-SRCREV = "49f436811a16f43dfbc1e84e0f836bbf79be8b47"
+SRCREV = "8523a101cd4dda7ca62d3f99c4bd1b3718cca953"
 
 S = "${WORKDIR}/git"
 
