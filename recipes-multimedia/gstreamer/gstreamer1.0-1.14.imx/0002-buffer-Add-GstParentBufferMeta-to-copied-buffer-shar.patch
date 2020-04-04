@@ -1,0 +1,80 @@
+From e2d20d0d8e03cda7081d75f5bd3c5a0468ea9190 Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Thu, 15 Aug 2019 13:36:51 -0700
+Subject: [PATCH 2/4] buffer: Add GstParentBufferMeta to copied buffer sharing
+ memory
+
+When copying a buffer (e.g. with gst_buffer_make_writable) the result
+is often two buffer instances backed by the same GstMemory instance.
+If the original buffer is pooled, unreffed and returned to the
+pool before the copy is freed, the pool will detect that the backing
+memory isn't writable (becuase it's still in use by the copy). The
+pool thus rejects the original buffer and instead allocates a new one.
+
+This is mostly fine, typically just a sligt hit to performance. The
+big problem for us are elements that incorrectly (against GStreamer
+design docs) assume that the buffers in a buffer pool never change
+once activated. One such element is NXP's vpudec that after the pool
+is activated dequeues all buffers and does its own bookkeeping that
+relies on the pool never returning buffers that weren't there from
+the very start. This assumption breaks if a buffer is returned to
+the pool but its backing memory is still in use by a copy.
+
+While fixing the erroneous elements would be the right thing it's
+more feasible to ensure that an original buffer always outlives
+any copies sharing its memory. In the case of vpudec the underlying
+VPU support libraries don't support changing buffers without tearing
+everything down and bringing it back up.
+
+Change-Id: I292736ac9f2c86a5b3b2949bca6440167511bf0f
+---
+ gst/gstbuffer.c | 33 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
+
+diff --git a/gst/gstbuffer.c b/gst/gstbuffer.c
+index 5e61cbcee..d0f9c6d81 100644
+--- a/gst/gstbuffer.c
++++ b/gst/gstbuffer.c
+@@ -672,7 +672,38 @@ gst_buffer_copy_with_flags (const GstBuffer * buffer, GstBufferCopyFlags flags)
+ static GstBuffer *
+ _gst_buffer_copy (const GstBuffer * buffer)
+ {
+-  return gst_buffer_copy_with_flags (buffer, GST_BUFFER_COPY_ALL);
++  GstBufferPool *copy;
++
++  copy = gst_buffer_copy_with_flags (buffer, GST_BUFFER_COPY_ALL);
++
++  /* if copy contains memory from buffer it gets a meta ref to buffer
++     so buffer is never freed and returned to pools before copy */
++  if (copy) {
++    guint i, j, shared;
++
++    shared = 0;
++    for (i = 0; i < gst_buffer_n_memory (buffer); i++) {
++      for (j = 0; j < gst_buffer_n_memory (copy); j++) {
++        GstMemory *bmem, *cmem;
++
++        bmem = gst_buffer_peek_memory (buffer, i);
++        cmem = gst_buffer_peek_memory (copy, j);
++        if (bmem == cmem) {
++          GST_CAT_DEBUG (GST_CAT_BUFFER, "buf %p and %p share mem %p (%u, %u)",
++              buffer, copy, bmem, i, j);
++          shared++;
++        }
++      }
++    }
++
++    if (shared) {
++      GST_CAT_DEBUG (GST_CAT_BUFFER, "buf %p and %p share %u memories",
++          buffer, copy, shared);
++      gst_buffer_add_parent_buffer_meta (copy, buffer);
++    }
++  }
++
++  return copy;
+ }
+ 
+ /**
+-- 
+2.26.0
+

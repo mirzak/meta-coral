@@ -1,0 +1,28 @@
+From c0663f1584256b2ddbc2330704db1147d8076f86 Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Fri, 6 Sep 2019 13:35:39 -0700
+Subject: [PATCH 3/4] Revert "Unmark GstDebugColorFlags as flags"
+
+This reverts commit 4eb9211e1a297f75c3f28067c893053ba51ba3db.
+
+Change-Id: I353922f0d96bf2050791d6ee167397c43464ecde
+---
+ gst/gstinfo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gst/gstinfo.h b/gst/gstinfo.h
+index e4aa13ab2..82e4f9b23 100644
+--- a/gst/gstinfo.h
++++ b/gst/gstinfo.h
+@@ -151,7 +151,7 @@ typedef enum {
+  * These are some terminal style flags you can use when creating your
+  * debugging categories to make them stand out in debugging output.
+  */
+-typedef enum {
++typedef enum { /*< flags >*/
+   /* colors */
+   GST_DEBUG_FG_BLACK		= 0x0000,
+   GST_DEBUG_FG_RED		= 0x0001,
+-- 
+2.26.0
+
