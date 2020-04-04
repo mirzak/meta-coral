@@ -1,0 +1,41 @@
+From 790c71d14e3edb44963ba8ed3281dbb77f36259f Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Thu, 1 Nov 2018 09:42:44 -0700
+Subject: [PATCH 2/4] Never enable v4l2 buffer copies
+
+If upstream element doesn't specify minimum amount of buffers in the
+allocation query, e.g. 'tee', v4l2src enables buffer copying. Copying
+of frames is super duper slow, way worse than pipelin stalls from too
+few buffers. Never enable it.
+
+Change-Id: Idda3598595ccbe38e3daa635789316f42cfa32e2
+---
+ sys/v4l2/gstv4l2object.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index c074196f3..5f09c2cf3 100755
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -4552,6 +4552,7 @@ gst_v4l2_object_decide_allocation (GstV4l2Object * obj, GstQuery * query)
+      * frame. */
+     own_min = min + obj->min_buffers + 2;
+ 
++#if 0
+     /* If no allocation parameters where provided, allow for a little more
+      * buffers and enable copy threshold */
+     if (!update) {
+@@ -4562,6 +4563,10 @@ gst_v4l2_object_decide_allocation (GstV4l2Object * obj, GstQuery * query)
+       gst_v4l2_buffer_pool_copy_at_threshold (GST_V4L2_BUFFER_POOL (pool),
+           FALSE);
+     }
++#else
++    /* Never enable buffer copies as it significantly degrades performance. */
++    gst_v4l2_buffer_pool_copy_at_threshold (GST_V4L2_BUFFER_POOL (pool), FALSE);
++#endif
+ 
+   } else {
+     /* In this case we'll have to configure two buffer pool. For our buffer
+-- 
+2.26.0
+
