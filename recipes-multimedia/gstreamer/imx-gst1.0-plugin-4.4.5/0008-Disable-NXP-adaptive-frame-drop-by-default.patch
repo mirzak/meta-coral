@@ -1,0 +1,32 @@
+From 287fd67e105d7385e22303bb75fd659e9b0c697e Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Mon, 30 Sep 2019 09:38:51 -0700
+Subject: [PATCH 1/1] Disable NXP 'adaptive frame drop' by default.
+
+It's unclear what use cases this algorithm is tuned for but standard
+GStreamer QoS does a much better job. This one causes severe jitter
+if down stream can't keep up for whatever reason, it's also flip-
+flopping between dropping and not dropping frames for an arbitrary
+200 ms window.
+
+Change-Id: I0d89eb55bf0c7b63d4a5a5c1917ef5d862419f68
+---
+ plugins/vpu/gstvpudec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/vpu/gstvpudec.c b/plugins/vpu/gstvpudec.c
+index dc698c4..482de8e 100755
+--- a/plugins/vpu/gstvpudec.c
++++ b/plugins/vpu/gstvpudec.c
+@@ -60,7 +60,7 @@ enum
+ 
+ #define DEFAULT_LOW_LATENCY FALSE
+ #define DEFAULT_OUTPUT_FORMAT 0
+-#define DEFAULT_ADAPTIVE_FRAME_DROP TRUE
++#define DEFAULT_ADAPTIVE_FRAME_DROP FALSE
+ #define DEFAULT_FRAMES_PLUS 0
+ /* Default to use VPU memory for video frame buffer as all video frame buffer
+  * must registe to VPU. Change video frame buffer will cause close VPU which
+-- 
+2.26.0
+
