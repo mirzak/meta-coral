@@ -1,0 +1,41 @@
+From cbd278e835db0477fbf7ca815b7f3cde6b5cd0a4 Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Thu, 15 Aug 2019 13:22:11 -0700
+Subject: [PATCH 04/17] glupload: Don't prealloc any buffers in dmabuf pool
+
+This pool logic was added by NXP. The pool gets added to any and all
+allocation queries and in certain auto plug cases the pool gets
+activated without any buffers being dequeued before reconfig. This
+leads to memory churn and in some cases OOM. Instead allocate buffers
+only when they're needed.
+
+Change-Id: Ic38c859db80098a2f81511dfae86fbb0330f1077
+---
+ gst-libs/gst/gl/gstglupload.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/gst-libs/gst/gl/gstglupload.c b/gst-libs/gst/gl/gstglupload.c
+index 6cf6dcda8..db6175fbb 100644
+--- a/gst-libs/gst/gl/gstglupload.c
++++ b/gst-libs/gst/gl/gstglupload.c
+@@ -855,7 +855,7 @@ _dma_buf_upload_propose_allocation (gpointer impl, GstQuery * decide_query,
+   if (!_dma_buf_upload_setup_buffer_pool (&pool, allocator, caps, &info))
+     goto setup_failed;
+ 
+-  gst_query_set_nth_allocation_pool (query, 0, pool, info.size, 1, 30);
++  gst_query_set_nth_allocation_pool (query, 0, pool, info.size, 0, 30);
+ 
+   if (pool)
+     gst_object_unref (pool);
+@@ -1743,7 +1743,7 @@ _directviv_upload_propose_allocation (gpointer impl, GstQuery * decide_query,
+   if (!_directviv_upload_setup_buffer_pool (&pool, allocator, caps, &info))
+     goto setup_failed;
+ 
+-  gst_query_set_nth_allocation_pool (query, 0, pool, info.size, 1, 30);
++  gst_query_set_nth_allocation_pool (query, 0, pool, info.size, 0, 30);
+ 
+   if (pool)
+     gst_object_unref (pool);
+-- 
+2.26.0
+

@@ -1,0 +1,39 @@
+From 683f2554083d17ae8cb65de5eea9bcaa4f9a867b Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Mon, 7 Oct 2019 12:50:55 -0700
+Subject: [PATCH 15/17] Allocate cached ION buffers.
+
+We're doing lots of CPU access of ION buffers and with no caching this
+access is pretty slow. By allocating with ION_FLAG_CACHED CPU mapped
+pages will be cached and for example a memcpy of a decoded 1080p video
+frame is about 3x faster. When writing to a buffer from CPU ("software
+rendering") ION will ensure proper cache management on munmap.
+
+For cases not involving CPU access (e.g. VPU directly to GPU) this is
+a no-op.
+
+In the Android world this corresponds to gralloc-ing with
+GRALLOC_USAGE_SW_READ | GRALLOC_USAGE_SW_WRITE.
+
+Change-Id: I52ca0ac7cc4ebfe3cb8a76aa38e437ac9a04cf02
+(cherry picked from commit a77a0ca4a8c7022cf5ef177e41a9dd5a5c95ee54)
+---
+ gst-libs/gst/allocators/gstionmemory.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gst-libs/gst/allocators/gstionmemory.c b/gst-libs/gst/allocators/gstionmemory.c
+index 4b1e1e441..daa246bec 100644
+--- a/gst-libs/gst/allocators/gstionmemory.c
++++ b/gst-libs/gst/allocators/gstionmemory.c
+@@ -41,7 +41,7 @@ GST_DEBUG_CATEGORY_STATIC (ion_allocator_debug);
+ #define gst_ion_allocator_parent_class parent_class
+ 
+ #define DEFAULT_HEAP_ID  0
+-#define DEFAULT_FLAG     0
++#define DEFAULT_FLAG     ION_FLAG_CACHED
+ 
+ enum
+ {
+-- 
+2.26.0
+

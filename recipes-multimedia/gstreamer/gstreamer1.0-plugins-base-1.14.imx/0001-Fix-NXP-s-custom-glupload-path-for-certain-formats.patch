@@ -1,0 +1,140 @@
+From 300b01b0a8b11a266f0cdd6233750fafc1e2125c Mon Sep 17 00:00:00 2001
+From: Alex Van Damme <atv@google.com>
+Date: Mon, 24 Jun 2019 13:57:16 -0700
+Subject: [PATCH 01/17] Fix NXP's custom glupload path for certain formats.
+
+- Port of a4b72743dd5b8ead623f4ce92a1b05ef791db67f from
+imx-gst-plugins-bad to imx-gst-plugins-base
+
+Change-Id: I9a21fe69cbeb1a330ac6a31b1d8e5c17cf08d7c3
+---
+ gst-libs/gst/gl/egl/gsteglimage.c | 106 +++++++++++++++++++++++++++++-
+ 1 file changed, 105 insertions(+), 1 deletion(-)
+
+diff --git a/gst-libs/gst/gl/egl/gsteglimage.c b/gst-libs/gst/gl/egl/gsteglimage.c
+index 611f7537b..1ea478441 100644
+--- a/gst-libs/gst/gl/egl/gsteglimage.c
++++ b/gst-libs/gst/gl/egl/gsteglimage.c
+@@ -415,6 +415,107 @@ _drm_fourcc_from_info (GstVideoInfo * info, int plane)
+   }
+ }
+ 
++/*
++ * From GStreamer 1.15
++ * Variant of _drm_rgba_fourcc_from_info() that is used in case the GPU can
++ * handle YUV formats directly (by using internal shaders, or hardwired
++ * YUV->RGB conversion matrices etc.)
++ */
++  static int
++_drm_direct_fourcc_from_info (GstVideoInfo * info)
++{
++  GstVideoFormat format = GST_VIDEO_INFO_FORMAT (info);
++
++  GST_DEBUG ("Getting DRM fourcc for %s", gst_video_format_to_string (format));
++
++  switch (format) {
++    case GST_VIDEO_FORMAT_YUY2:
++      return DRM_FORMAT_YUYV;
++
++    case GST_VIDEO_FORMAT_YVYU:
++      return DRM_FORMAT_YVYU;
++
++    case GST_VIDEO_FORMAT_UYVY:
++      return DRM_FORMAT_UYVY;
++
++    case GST_VIDEO_FORMAT_VYUY:
++      return DRM_FORMAT_VYUY;
++
++    case GST_VIDEO_FORMAT_AYUV:
++      return DRM_FORMAT_AYUV;
++
++    case GST_VIDEO_FORMAT_NV12:
++      return DRM_FORMAT_NV12;
++
++    case GST_VIDEO_FORMAT_NV21:
++      return DRM_FORMAT_NV21;
++
++    case GST_VIDEO_FORMAT_NV16:
++      return DRM_FORMAT_NV16;
++
++    case GST_VIDEO_FORMAT_NV61:
++      return DRM_FORMAT_NV61;
++
++    case GST_VIDEO_FORMAT_NV24:
++      return DRM_FORMAT_NV24;
++
++    case GST_VIDEO_FORMAT_YUV9:
++      return DRM_FORMAT_YUV410;
++
++    case GST_VIDEO_FORMAT_YVU9:
++      return DRM_FORMAT_YVU410;
++
++    case GST_VIDEO_FORMAT_Y41B:
++      return DRM_FORMAT_YUV411;
++
++    case GST_VIDEO_FORMAT_I420:
++      return DRM_FORMAT_YUV420;
++
++    case GST_VIDEO_FORMAT_YV12:
++      return DRM_FORMAT_YVU420;
++
++    case GST_VIDEO_FORMAT_Y42B:
++      return DRM_FORMAT_YUV422;
++
++    case GST_VIDEO_FORMAT_Y444:
++      return DRM_FORMAT_YUV444;
++
++    case GST_VIDEO_FORMAT_RGB16:
++      return DRM_FORMAT_RGB565;
++
++    case GST_VIDEO_FORMAT_BGR16:
++      return DRM_FORMAT_BGR565;
++
++    case GST_VIDEO_FORMAT_RGBA:
++      return DRM_FORMAT_ABGR8888;
++
++    case GST_VIDEO_FORMAT_RGBx:
++      return DRM_FORMAT_XBGR8888;
++
++    case GST_VIDEO_FORMAT_BGRA:
++      return DRM_FORMAT_ARGB8888;
++
++    case GST_VIDEO_FORMAT_BGRx:
++      return DRM_FORMAT_XRGB8888;
++
++    case GST_VIDEO_FORMAT_ARGB:
++      return DRM_FORMAT_BGRA8888;
++
++    case GST_VIDEO_FORMAT_xRGB:
++      return DRM_FORMAT_BGRX8888;
++
++    case GST_VIDEO_FORMAT_ABGR:
++      return DRM_FORMAT_RGBA8888;
++
++    case GST_VIDEO_FORMAT_xBGR:
++      return DRM_FORMAT_RGBX8888;
++
++    default:
++      GST_INFO ("Unsupported format for direct DMABuf.");
++      return -1;
++  }
++}
++
+ /**
+  * gst_egl_image_from_dmabuf:
+  * @context: a #GstGLContext (must be an EGL context)
+@@ -436,7 +537,10 @@ gst_egl_image_from_dmabuf (GstGLContext * context,
+   gint fourcc;
+   gint i;
+ 
+-  fourcc = _drm_fourcc_from_info (in_info, plane);
++  fourcc = _drm_direct_fourcc_from_info (in_info);
++  if (fourcc == -1)
++    return NULL;
++
+   format = gst_gl_format_from_video_info (context, in_info, plane);
+ 
+   GST_DEBUG ("fourcc %.4s (%d) plane %d (%dx%d)",
+-- 
+2.26.0
+
