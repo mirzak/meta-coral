@@ -14,6 +14,10 @@ SRC_URI_coral-dev = "\
     file://0002-include-linux-module.h-copy-init-exit-attrs-to-.patch \
 "
 
-do_configure_prepend_coral-dev() {
+# As we use the 'defconfig' from Mendel OS (Debian) build scripts, we must also
+# replicate the configure step to merge it.
+do_configure_coral-dev() {
     oe_runmake_call -C ${S} CC="${KERNEL_CC}" O=${B} defconfig
+    cat "${WORKDIR}/defconfig" | tee -a "${B}/.config"
+    oe_runmake_call -C ${S} CC="${KERNEL_CC}" O=${B} olddefconfig
 }
