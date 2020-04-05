@@ -1,0 +1,53 @@
+From 0fe0e66f243bf25ec98e8b7a242fb383b3708662 Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Tue, 15 Oct 2019 00:50:25 -0700
+Subject: [PATCH 17/17] Tightly pack RGB buffers downloaded from GPU.
+
+GStreamer defaults to 4 byte aligning stride for RGB/BGR whereas
+stride == width * bpp is expected by networks. GPU can support this
+so override the default stride value when allocating the DMA buffer
+for download, and propagate the tightly packed stride downstream.
+
+BUG: 142698697
+Change-Id: I0327f746e547f5ad1805f28efcbd9ea0c6512d9f
+---
+ gst-libs/gst/gl/gstglmemorydma.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/gst-libs/gst/gl/gstglmemorydma.c b/gst-libs/gst/gl/gstglmemorydma.c
+index 362fbb7c6..566d77be3 100644
+--- a/gst-libs/gst/gl/gstglmemorydma.c
++++ b/gst-libs/gst/gl/gstglmemorydma.c
+@@ -172,6 +172,19 @@ _gl_mem_dma_alloc (GstGLBaseMemoryAllocator * allocator,
+ 
+   mem->params = params->parent.alloc_params;
+ 
++  /* GstVideoInfo defaults to 4 b stride align for RGB/BGR but we can and want to
++   * pack the buffer as tightly as possible (i.e. stride == width * bpp).
++   */
++  switch (params->v_info->finfo->format) {
++    case GST_VIDEO_FORMAT_RGB:
++    case GST_VIDEO_FORMAT_BGR:
++      params->v_info->stride[0] = params->v_info->width * 3;
++      params->v_info->size = params->v_info->stride[0] * params->v_info->height;
++      break;
++    default:
++      break;
++  }
++
+   size = gst_gl_get_plane_data_size (params->v_info, params->valign, params->plane);
+   mem->dma = gst_allocator_alloc (gl_dma_alloc->ion_allocator, size, mem->params);
+ 
+@@ -252,6 +265,9 @@ gst_gl_memory_dma_buffer_to_gstbuffer (GstGLContext *ctx, GstVideoInfo * info,
+ 
+   glmem = gst_buffer_peek_memory (glbuf, 0);
+ 
++  /* Use GstVideoInfo from alloc time, not parsed from caps with default strides. */
++  info = &glmem->mem.info;
++
+   buf = gst_buffer_new ();
+   gst_buffer_append_memory (buf, (GstMemory *) glmem->dma);
+   gst_memory_ref ((GstMemory *)glmem->dma);
+-- 
+2.26.0
+

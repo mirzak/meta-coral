@@ -1,0 +1,59 @@
+From 8caf4efce7b26173c5647dc5276c0916d5a1889b Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Fri, 5 Oct 2018 00:48:58 +1000
+Subject: [PATCH 11/17] glimagesink: make multiview none equivalent to mono
+
+Fixes the internal viewconvert to not scale buffers for output with the
+following pipeline:
+
+gltestsrc ! glimagesink
+
+It also fixes overlay composition with a resized output with an OpenGL
+upstream:
+
+gltestsrc ! timeoverlay ! glimagesink
+
+Cherry picked from
+https://gitlab.freedesktop.org/gstreamer/gst-plugins-base/commit/6e591403a77282a7bef24d5d5c671a6d0d788c16
+
+Change-Id: Ia02f9cf89d78b96e37fe7fdddf2b33c1dcf299fc
+---
+ ext/gl/gstglimagesink.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/ext/gl/gstglimagesink.c b/ext/gl/gstglimagesink.c
+index 07e32443b..b08605522 100644
+--- a/ext/gl/gstglimagesink.c
++++ b/ext/gl/gstglimagesink.c
+@@ -1399,6 +1399,19 @@ configure_display_from_info (GstGLImageSink * glimage_sink,
+   return TRUE;
+ }
+ 
++static gboolean
++_mview_modes_are_equal (GstVideoMultiviewMode a, GstVideoMultiviewMode b)
++{
++  if (a == b)
++    return TRUE;
++  if (a == GST_VIDEO_MULTIVIEW_MODE_NONE && b == GST_VIDEO_MULTIVIEW_MODE_MONO)
++    return TRUE;
++  if (a == GST_VIDEO_MULTIVIEW_MODE_MONO && b == GST_VIDEO_MULTIVIEW_MODE_NONE)
++    return TRUE;
++
++  return FALSE;
++}
++
+ /* Called with GST_GLIMAGE_SINK lock held, to
+  * copy in_info to out_info and update out_caps */
+ static gboolean
+@@ -1418,7 +1431,7 @@ update_output_format (GstGLImageSink * glimage_sink)
+ 
+   mv_mode = GST_VIDEO_INFO_MULTIVIEW_MODE (&glimage_sink->in_info);
+ 
+-  if (glimage_sink->mview_output_mode != mv_mode) {
++  if (!_mview_modes_are_equal (glimage_sink->mview_output_mode, mv_mode)) {
+     /* Input is multiview, and output wants a conversion - configure 3d converter now,
+      * otherwise defer it until either the caps or the 3D output mode changes */
+     gst_video_multiview_video_info_change_mode (out_info,
+-- 
+2.26.0
+

@@ -1,0 +1,46 @@
+From 3202832fee77030874b0e1408057a60649cf339a Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Mon, 26 Aug 2019 15:19:43 -0700
+Subject: [PATCH 07/17] gldownload: don't pre-allocate ion buffers
+
+NXP's gldownload fastpath requests 3 ION buffers to be created in the
+pool without any upper bound. That means 3 buffers are allocated the
+moment the pool is activated and there's no upper bound on how many
+the pool can allocate.
+
+This is an issue when working with larger buffers as we can easily
+run out of CMA memory. The cost of allocating an ION buffer when
+needed is negligible. glupload for example doesn't even use a pool.
+Since gldownload is using a pool the already negligible cost is
+hidden further.
+
+In most common cases (i.e. downstream doesn't hold on to downloaded
+buffers) this change results in only one buffer being allocated.
+For a 1080p YUY -> RGBA conversion that's downloaded that's a
+CMA savings of ~16 MB. For downstream elements that hold on to buffers
+(e.g. certain double buffered sinks) more buffers will be allocated as
+needed, up to 3 to prevent OOM.
+
+Change-Id: I68172d7e9d1bf634900cb639f90843768ac525ae
+---
+ ext/gl/gstgldownloadelement.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ext/gl/gstgldownloadelement.c b/ext/gl/gstgldownloadelement.c
+index 77dfc4601..8b4ea4ba4 100644
+--- a/ext/gl/gstgldownloadelement.c
++++ b/ext/gl/gstgldownloadelement.c
+@@ -567,8 +567,8 @@ gst_gl_download_element_propose_allocation (GstBaseTransform * bt,
+ 
+   GST_DEBUG_OBJECT (download, "create pool %p", pool);
+ 
+-  //propose 3 buffers for better performance
+-  gst_query_add_allocation_pool (query, pool, size, 3, 0);
++  /* propose up to 3 buffers with no minimum to save memory */
++  gst_query_add_allocation_pool (query, pool, size, 0, 3);
+ 
+   gst_object_unref (pool);
+ 
+-- 
+2.26.0
+

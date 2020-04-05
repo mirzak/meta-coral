@@ -1,0 +1,61 @@
+From a6bdc5914a18b433d506cf1d71b5ea2804488375 Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Tue, 24 Sep 2019 10:29:57 -0700
+Subject: [PATCH 13/17] Revert "glimagesink: need add glFinish after
+ eglswapbuffer"
+
+To quote the upstream maintainers:
+"glFinish() after swapBuffers is a no-go performance wise [...]
+The question is why do you need this in the first place ?"
+
+https://gitlab.freedesktop.org/gstreamer/gst-plugins-base/issues/411
+
+glFinish stalls the entire GPU pipeline, which severely degrades
+performance in pipelines with multiple branches, such as:
+
+glupload ! tee name=t
+  t. ! queue ! glfilter ! gldownload ! ...
+  t. ! glimagesink
+
+glFinish at the end in glimagesink halts until any and all work
+in the pipeline context is done on the GPU including in the upper
+branch although that isn't required. This makes both branches go
+slower. It also doesn't fix any tearing issues as that's properly
+handled by sync fences already.
+
+This reverts commit 397e0e785fae2da048bf9bfc3e12f572e9a26bc7.
+
+Change-Id: I6bdbe33fab36a976969e10d28e95190e47f50766
+---
+ gst-libs/gst/gl/egl/gstglcontext_egl.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/gst-libs/gst/gl/egl/gstglcontext_egl.c b/gst-libs/gst/gl/egl/gstglcontext_egl.c
+index 2a79bbbf0..a9b41ad79 100644
+--- a/gst-libs/gst/gl/egl/gstglcontext_egl.c
++++ b/gst-libs/gst/gl/egl/gstglcontext_egl.c
+@@ -37,7 +37,6 @@
+ #include "gstegl.h"
+ #include "../utils/opengl_versions.h"
+ #include "../utils/gles_versions.h"
+-#include "../gstglfuncs.h"
+ 
+ #if GST_GL_HAVE_WINDOW_X11
+ #include "../x11/gstglwindow_x11.h"
+@@ -690,13 +689,10 @@ static void
+ gst_gl_context_egl_swap_buffers (GstGLContext * context)
+ {
+   GstGLContextEGL *egl;
+-  const GstGLFuncs *gl;
+ 
+   egl = GST_GL_CONTEXT_EGL (context);
+-  gl = context->gl_vtable;
+ 
+   eglSwapBuffers (egl->egl_display, egl->egl_surface);
+-  gl->Finish();
+ }
+ 
+ static GstGLAPI
+-- 
+2.26.0
+

@@ -1,0 +1,34 @@
+From cd8675b0648a5565b09641b746368b36619cf444 Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Wed, 6 Feb 2019 16:51:59 -0800
+Subject: [PATCH 3/4] Disable all libv4l2 emulated formats with
+ V4L2_DISABLE_CONVERSION.
+
+We get several emulated formats enumerated as supported, e.g. RGB,
+from libv4l2. These are too inefficient to use in any real world
+use case vs. using videoconvert on the CPU with ORC, or glfilterbin
+on the GPU. With this change only the natively supported formats
+will be enumerated, same as:
+v4l2-ctl --list-formats-ext
+
+Change-Id: If56c9f2f7be122e42f7a9729d60450eb8a127fb8
+---
+ sys/v4l2/v4l2_calls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sys/v4l2/v4l2_calls.c b/sys/v4l2/v4l2_calls.c
+index 923197437..2fb357b3b 100644
+--- a/sys/v4l2/v4l2_calls.c
++++ b/sys/v4l2/v4l2_calls.c
+@@ -583,7 +583,7 @@ gst_v4l2_open (GstV4l2Object * v4l2object)
+ #ifdef HAVE_LIBV4L2
+   if (v4l2object->fd_open)
+     libv4l2_fd = v4l2object->fd_open (v4l2object->video_fd,
+-        V4L2_ENABLE_ENUM_FMT_EMULATION);
++        V4L2_DISABLE_CONVERSION);
+ #endif
+ 
+   /* Note the v4l2_xxx functions are designed so that if they get passed an
+-- 
+2.26.0
+

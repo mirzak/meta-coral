@@ -8,7 +8,13 @@ SRCREV = "cc8109bc1ae6009228a3a6e12397d7c95d7e6813"
 
 S = "${WORKDIR}/git"
 
-RDEPENDS_${PN} = "gstreamer1.0-python python3-edgetpu python3-edgetpuvision"
+RDEPENDS_${PN} = "\
+    bash \
+    gstreamer1.0-python \
+    python3-edgetpu \
+    python3-edgetpuvision \
+    python3-setuptools \
+"
 
 # This is probably a bug in upstream, gstreamer1.0-plugins-base
 # package has the following content:

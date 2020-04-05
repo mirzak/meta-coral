@@ -1,0 +1,39 @@
+From bb9d08bdb86aeec9473ad5d25157b3d13ecd5084 Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Mon, 29 Oct 2018 17:16:27 -0700
+Subject: [PATCH 1/4] Increase number of v4l2 capture buffers.
+
+GStreamer queries the driver for V4L2_CID_MIN_BUFFERS_FOR_CAPTURE
+which our driver doesn't support. The fallback is GST_V4L2_MIN_BUFFERS
+which is set to 2. Using only 2 buffers severely degrades performance.
+
+imxv4l2src, which isn't built for imx8 by default but can be enabled
+for comparison, uses 8 buffers and performs much better. 8 is a bit
+excessive and we get the same performance with 5. This change plus
+io-mode=dmabuf gives smooth 30 fps streaming @1080p:
+
+gst-launch-1.0 v4l2src ! video/x-raw,format=YUY2,width=1920,height=1080 ! kmssink sync=false
+
+This pipeline used to run at around 7 fps, now 30.
+
+Change-Id: Ia384a5a55aecae4093b2a8b7511c5f1780e68fb2
+---
+ sys/v4l2/gstv4l2object.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index 11e805711..3e83bdfc2 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -43,7 +43,7 @@ typedef struct _GstV4l2ObjectClassHelper GstV4l2ObjectClassHelper;
+ #include <gstv4l2bufferpool.h>
+ 
+ /* size of v4l2 buffer pool in streaming case */
+-#define GST_V4L2_MIN_BUFFERS 2
++#define GST_V4L2_MIN_BUFFERS 5
+ 
+ /* max frame width/height */
+ #define GST_V4L2_MAX_SIZE (1<<15) /* 2^15 == 32768 */
+-- 
+2.26.0
+

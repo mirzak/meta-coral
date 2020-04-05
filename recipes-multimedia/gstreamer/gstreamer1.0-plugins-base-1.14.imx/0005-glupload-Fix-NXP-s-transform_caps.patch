@@ -1,0 +1,97 @@
+From d521bfbee8bc742707d1aa8afb2c973fde118a8c Mon Sep 17 00:00:00 2001
+From: Jonas Larsson <ljonas@google.com>
+Date: Thu, 15 Aug 2019 13:30:23 -0700
+Subject: [PATCH 05/17] glupload: Fix NXP's transform_caps
+
+NXP added a fast dmabuf upload path that depends on Vivante features.
+In this mode input is converted to RGBA backed by a single EGLImage so
+they changed transform_caps to hard coded RGBA. They however didn't:
+
+* remove colorimetry and chroma-site from the caps which doesn't make sense
+for a non planar format like RGBA. This leads to downstream warnings
+like "invalid matrix 3 for RGB format, using RGB" to be produced for
+every frame.
+
+* change upstream caps transform at all leading to allocation query
+mismatches. This is most obvious when a tee is present since it now
+aggregates allocation queries. At least one downstream tee branch
+gets the wrong caps with subsequent all 0 pixels when frame is mapped.
+
+Cherry-picked from upstream implementation of the same feature:
+https://github.com/GStreamer/gst-plugins-base/commit/507e31dfc00256a9cb2081aaab98a7728b0197c3
+
+Change-Id: I2e118c8559da44fd703c5071c386b7e79ff6d69a
+---
+ gst-libs/gst/gl/gstglupload.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/gst-libs/gst/gl/gstglupload.c b/gst-libs/gst/gl/gstglupload.c
+index db6175fbb..c5c86a3ba 100644
+--- a/gst-libs/gst/gl/gstglupload.c
++++ b/gst-libs/gst/gl/gstglupload.c
+@@ -522,12 +522,14 @@ static GstCaps *
+ _dma_buf_upload_transform_caps (gpointer impl, GstGLContext * context,
+     GstPadDirection direction, GstCaps * caps)
+ {
++  struct DmabufUpload *dmabuf = impl;
+   GstCapsFeatures *passthrough =
+       gst_caps_features_from_string
+       (GST_CAPS_FEATURE_META_GST_VIDEO_OVERLAY_COMPOSITION);
+   GstCaps *ret;
+ 
+   if (direction == GST_PAD_SINK) {
++    gint i, n;
+     GstCaps *tmp;
+ 
+     ret =
+@@ -535,15 +537,37 @@ _dma_buf_upload_transform_caps (gpointer impl, GstGLContext * context,
+         GST_CAPS_FEATURE_MEMORY_GL_MEMORY, passthrough);
+ 
+     gst_caps_set_simple (ret, "format", G_TYPE_STRING, "RGBA", NULL);
++
++    n = gst_caps_get_size (ret);
++    for (i = 0; i < n; i++) {
++      GstStructure *s = gst_caps_get_structure (ret, i);
++      gst_structure_remove_fields (s, "chroma-site", NULL);
++      gst_structure_remove_fields (s, "colorimetry", NULL);
++    }
+     tmp = _caps_intersect_texture_target (ret, 1 << GST_GL_TEXTURE_TARGET_2D);
+     gst_caps_unref (ret);
+     ret = tmp;
+   } else {
+     gint i, n;
++    GstCaps *tmp;
++    GValue formats = G_VALUE_INIT;
++    gchar *format_str = g_strdup (GST_GL_MEMORY_VIDEO_FORMATS_STR);
+ 
+     ret =
+         _set_caps_features_with_passthrough (caps,
+         GST_CAPS_FEATURE_MEMORY_DMABUF, passthrough);
++    tmp =
++        _set_caps_features_with_passthrough (caps,
++        GST_CAPS_FEATURE_MEMORY_SYSTEM_MEMORY, passthrough);
++    gst_caps_append (ret, tmp);
++
++    g_value_init (&formats, GST_TYPE_LIST);
++    gst_value_deserialize (&formats, format_str);
++    tmp = gst_caps_copy (ret);
++    gst_caps_set_value (tmp, "format", &formats);
++    gst_caps_append (ret, tmp);
++    g_free (format_str);
++    g_value_unset (&formats);
+ 
+     n = gst_caps_get_size (ret);
+     for (i = 0; i < n; i++) {
+@@ -555,6 +579,9 @@ _dma_buf_upload_transform_caps (gpointer impl, GstGLContext * context,
+ 
+   gst_caps_features_free (passthrough);
+ 
++  GST_DEBUG_OBJECT (dmabuf->upload, "transformed %" GST_PTR_FORMAT " into %"
++      GST_PTR_FORMAT, caps, ret);
++
+   return ret;
+ }
+ 
+-- 
+2.26.0
+
