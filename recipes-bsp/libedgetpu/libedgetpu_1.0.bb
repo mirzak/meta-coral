@@ -6,7 +6,7 @@ require recipes-support/common/edgetpu-common.inc
 
 S = "${WORKDIR}/git"
 
-RDEPENDS_${PN} = "libusb1"
+RDEPENDS_${PN} = "libusb1 libcxx"
 
 EDGETPU_THROTTLED = "1"
 
