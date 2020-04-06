@@ -3,12 +3,12 @@ HOMEPAGE = "https://coral.googlesource.com/edgetpu"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://edgetpuvision/utils.py;endline=13;md5=35852385043d2b5bb4f52507e41aea44"
 
-SRC_URI = "git://coral.googlesource.com/edgetpuvision;protocol=https;branch=release-chef"
-SRCREV = "437ef5b065892eca461aee3db117abefc33d28aa"
+SRC_URI = "git://coral.googlesource.com/edgetpuvision;protocol=https;branch=release-day"
+SRCREV = "24a6267fb322c02d0138bc5a32cf7fb2ddf47b5b"
 
 S = "${WORKDIR}/git"
 
-PV = "release-chef"
+PV = "release-day"
 
 RDEPENDS_${PN} = "\
     bash \
