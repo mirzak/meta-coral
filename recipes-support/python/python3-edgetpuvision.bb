@@ -12,14 +12,24 @@ PV = "release-day"
 
 RDEPENDS_${PN} = "\
     bash \
+    gstreamer1.0-python \
     libedgetpu \
     python3-numpy \
     python3-pillow \
     python3-protobuf \
     python3-pygobject \
+    python3-pyopengl \
     python3-setuptools \
 "
 
 inherit setuptools3
+
+do_install_append() {
+    install -d ${D}/${libdir}/gstreamer-1.0/python
+
+    install -m 751 plugins/glbox.py ${D}/${libdir}/gstreamer-1.0/python
+    install -m 751 plugins/glsvgoverlaysink.py ${D}/${libdir}/gstreamer-1.0/python
+    install -m 751 plugins/glsvgoverlaysrc.py ${D}/${libdir}/gstreamer-1.0/python
+}
 
 BBCLASSEXTEND = "native nativesdk"
