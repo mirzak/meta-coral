@@ -12,6 +12,7 @@ PV = "release-day"
 
 RDEPENDS_${PN} = "\
     bash \
+    gstreamer1.0-python \
     libedgetpu \
     python3-numpy \
     python3-pillow \
