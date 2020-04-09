@@ -23,4 +23,12 @@ RDEPENDS_${PN} = "\
 
 inherit setuptools3
 
+do_install_append() {
+    install -d ${D}/${libdir}/gstreamer-1.0/python
+
+    install -m 751 plugins/glbox.py ${D}/${libdir}/gstreamer-1.0/python
+    install -m 751 plugins/glsvgoverlaysink.py ${D}/${libdir}/gstreamer-1.0/python
+    install -m 751 plugins/glsvgoverlaysrc.py ${D}/${libdir}/gstreamer-1.0/python
+}
+
 BBCLASSEXTEND = "native nativesdk"
