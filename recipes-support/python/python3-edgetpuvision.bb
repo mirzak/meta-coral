@@ -18,6 +18,7 @@ RDEPENDS_${PN} = "\
     python3-pillow \
     python3-protobuf \
     python3-pygobject \
+    python3-pyopengl \
     python3-setuptools \
 "
 
