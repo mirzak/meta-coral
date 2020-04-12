@@ -1,10 +1,19 @@
-Collection of OE/Yocto layers for the Google Coral Dev Board
-============================================================
+OpenEmbedded/Yocto Demo layer for Google Coral Dev Board
+=======================================================
 
-Please see the individual layers for more information:
+This layer provides demos for Coral Dev Board for use with OpenEmbedded
+and/or Yocto.
 
-- [meta-coral-bsp](meta-coral-bsp/README.md)
-- [meta-coral-demo](meta-coral-bsp/README.md)
+This layer depends on:
+
+    URI: https://github.com/mirzak/meta-coral
+    layers: meta-coral-bsp
+    branch: master
+    revision: HEAD
+
+    URI: https://github.com/Freescale/meta-freescale-distro.git
+    branch: master
+    revision: HEAD
 
 Quick start
 -----------
