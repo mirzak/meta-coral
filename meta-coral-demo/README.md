@@ -8,11 +8,11 @@ This layer depends on:
 
     URI: https://github.com/mirzak/meta-coral
     layers: meta-coral-bsp
-    branch: master
+    branch: zeus
     revision: HEAD
 
     URI: https://github.com/Freescale/meta-freescale-distro.git
-    branch: master
+    branch: zeus
     revision: HEAD
 
 Quick start

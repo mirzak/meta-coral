@@ -7,15 +7,15 @@ and/or Yocto.
 This layer depends on:
 
     URI: git://git.openembedded.org/openembedded-core
-    branch: master
+    branch: zeus
     revision: HEAD
 
     URI: https://github.com/Freescale/meta-freescale.git
-    branch: master
+    branch: zeus
     revision: HEAD
 
     URL: https://github.com/kraj/meta-clang
-    branch: master
+    branch: zeus
     revision: HEAD
 
 Quick start
