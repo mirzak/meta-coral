@@ -21,46 +21,8 @@ This layer depends on:
 Quick start
 -----------
 
-As this layer depends on the Freescale/NXP BSP we can utilize the base setup
-from there.
-
-Create directory where you want to store the environment and change the shell
-to that location:
-
-    mkdir coral && cd coral
-
-Initialize repo manifest:
-
-    repo init -u https://github.com/Freescale/fsl-community-bsp-platform -b master
-
-Fetch layers in manifest:
-
-    repo sync
-
-Clone `meta-clang`:
-
-    git clone https://github.com/kraj/meta-clang.git sources/meta-clang
-
-Clone `meta-coral`:
-
-    git clone https://github.com/mirzak/meta-coral.git sources/meta-coral
-
-Setup the environment:
-
-    MACHINE=coral-dev DISTRO=fslc-xwayland source ./setup-environment build
-
-Add the `meta-clang` layer to bblayers.conf:
-
-    echo 'BBLAYERS += "${BSPDIR}/sources/meta-clang"' >> conf/bblayers.conf
-
-
-Add the `meta-coral` layer to bblayers.conf:
-
-    echo 'BBLAYERS += "${BSPDIR}/sources/meta-coral/meta-coral-bsp"' >> conf/bblayers.conf
-
-Start baking:
-
-    bitbake core-image-base
+Please visit the the [Quick start guide](https://github.com/mirzak/meta-coral/wiki/Quick-start-guide)
+for instructions on how to setup and build the project.
 
 Contributing
 ------------

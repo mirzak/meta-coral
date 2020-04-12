@@ -1,7 +1,7 @@
 OpenEmbedded/Yocto Demo layer for Google Coral Dev Board
 =======================================================
 
-This layer provides demoes for Coral Dev Board for use with OpenEmbedded
+This layer provides demos for Coral Dev Board for use with OpenEmbedded
 and/or Yocto.
 
 This layer depends on:
@@ -14,6 +14,12 @@ This layer depends on:
     URI: https://github.com/Freescale/meta-freescale-distro.git
     branch: master
     revision: HEAD
+
+Quick start
+-----------
+
+Please visit the the [Quick start guide](https://github.com/mirzak/meta-coral/wiki/Quick-start-guide)
+for instructions on how to setup and build the project.
 
 Contributing
 ------------
