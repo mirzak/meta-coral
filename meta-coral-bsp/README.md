@@ -47,7 +47,7 @@ Clone `meta-coral`:
 
 Setup the environment:
 
-    MACHINE=coral-dev DISTRO=fslc-wayland source ./setup-environment build
+    MACHINE=coral-dev DISTRO=fslc-xwayland source ./setup-environment build
 
 Add the `meta-clang` layer to bblayers.conf:
 
