@@ -56,7 +56,7 @@ Add the `meta-clang` layer to bblayers.conf:
 
 Add the `meta-coral` layer to bblayers.conf:
 
-    echo 'BBLAYERS += "${BSPDIR}/sources/meta-coral"' >> conf/bblayers.conf
+    echo 'BBLAYERS += "${BSPDIR}/sources/meta-coral/meta-coral-bsp"' >> conf/bblayers.conf
 
 Start baking:
 
