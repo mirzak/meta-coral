@@ -15,9 +15,9 @@ python __anonymous() {
     if not tunes:
         return
 
-    if tunes == "aarch64":
+    if "aarch64" in tunes:
         d.setVar("LIBEDGETPU_SUFFIX", "arm64")
-    elif tunes == "x86_64":
+    elif "x86_64" in tunes:
         d.setVar("LIBEDGETPU_SUFFIX", "x86_64")
     elif "callconvention-hard" in tunes:
         d.setVar("LIBEDGETPU_SUFFIX", "arm32")
