@@ -1,0 +1,36 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          usb-gadget
+### END INIT INFO
+
+# /etc/init.d init script for usb-gadget
+
+start() {
+  # start the usb gadget
+  /usr/bin/usb-gadget-start.sh
+  # start getty on ttyGS0
+  /sbin/agetty -8 -c -w --noclear ttyGS0 $TERM
+  echo 'usb-gadget started' >&2
+}
+
+stop() {
+  /usr/bin/usb-gadget-stop.sh
+  # stop getty on ttyGS0
+  kill -9 `ps ax | grep agetty | grep ttyGS0 -m 1 | awk '{print $1}'`
+  echo 'usb-gadget stoped' >&2
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+esac
