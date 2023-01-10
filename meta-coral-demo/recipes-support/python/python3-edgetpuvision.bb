@@ -10,7 +10,7 @@ S = "${WORKDIR}/git"
 
 PV = "release-day"
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
     bash \
     gstreamer1.0-python \
     libedgetpu \
@@ -24,7 +24,7 @@ RDEPENDS_${PN} = "\
 
 inherit setuptools3
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/${libdir}/gstreamer-1.0/python
 
     install -m 751 plugins/glbox.py ${D}/${libdir}/gstreamer-1.0/python

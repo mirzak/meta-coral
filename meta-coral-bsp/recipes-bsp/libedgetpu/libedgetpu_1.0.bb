@@ -6,7 +6,7 @@ require recipes-support/common/edgetpu-common.inc
 
 S = "${WORKDIR}/git"
 
-RDEPENDS_${PN} = "libusb1 libcxx"
+RDEPENDS:${PN} = "libusb1 libcxx"
 
 EDGETPU_THROTTLED = "1"
 
@@ -49,4 +49,4 @@ do_install() {
 
 TOOLCHAIN = "clang"
 
-INSANE_SKIP_${PN} += "already-stripped"
+INSANE_SKIP:${PN} += "already-stripped"

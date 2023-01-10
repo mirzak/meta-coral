@@ -13,4 +13,4 @@ inherit pypi setuptools3
 SRC_URI += "file://0001-fix-compability-with-cython-029.13.patch;striplevel=2"
 
 DEPENDS += "python3-numpy-native"
-RDEPENDS_${PN} += "python3-pyopengl"
+RDEPENDS:${PN} += "python3-pyopengl"

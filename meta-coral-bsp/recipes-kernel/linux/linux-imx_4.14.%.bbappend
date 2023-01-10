@@ -1,8 +1,8 @@
 # Copyright (C) 2020 Mirza Krak
 
-FILESEXTRAPATHS_prepend_coral-dev := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend_coral-dev := "${THISDIR}/${PN}:"
 
-SUMMARY_coral-dev = "Linux Kernel provided and supported by Google for Coral Dev Board"
+SUMMARY:coral-dev = "Linux Kernel provided and supported by Google for Coral Dev Board"
 
 SRCBRANCH_coral-dev = "release-day"
 SRCREV_coral-dev = "f19426310e2e0ff490a3160a64a05018d7f6c536"

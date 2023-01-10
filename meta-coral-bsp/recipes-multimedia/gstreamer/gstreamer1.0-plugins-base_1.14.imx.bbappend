@@ -1,11 +1,11 @@
-FILESEXTRAPATHS_prepend_coral-dev := "${THISDIR}/${PN}-${PV}:"
+FILESEXTRAPATHS:prepend_coral-dev := "${THISDIR}/${PN}-${PV}:"
 
 # Patches from https://coral.googlesource.com/imx-gst-plugins-base
 #
 # Generated using:
 #
 #    git format-patch rel_imx_4.14.98_2.0.0_ga..1.14.4+imx-5
-SRC_URI_append_coral-dev = " \
+SRC_URI:append_coral-dev = " \
     file://0001-Fix-NXP-s-custom-glupload-path-for-certain-formats.patch \
     file://0002-Use-highp-float-precision-only-in-YUY2-color-convert.patch \
     file://0003-Demote-buggy-FPS-prints-from-g_print-to-GST_DEBUG.patch \
