@@ -1,1 +1,1 @@
-PLATFORM_FLAVOR_coral-dev = "mx8mqevk"
+PLATFORM_FLAVOR:coral-dev = "mx8mqevk"
