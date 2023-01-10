@@ -12,6 +12,7 @@ LIC_FILES_CHKSUM = " \
 
 SRC_URI = "git://git.kernel.org/pub/scm/utils/dtc/dtc.git;branch=master \
            file://make_install.patch \
+           file://0001-Remove-redundant-YYLOC-global-declaration.patch \
            file://0001-Fix-compiler-warnings-seen-with-musl.patch \
            "
 SRCREV = "22a65c5331c22979d416738eb756b9541672e00d"
