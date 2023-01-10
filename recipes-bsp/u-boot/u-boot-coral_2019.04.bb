@@ -9,7 +9,8 @@ PROVIDES += "u-boot"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRC_URI = "git://coral.googlesource.com/uboot-imx;protocol=https;branch=master"
+SRC_URI = "git://coral.googlesource.com/uboot-imx;protocol=https;branch=master \
+           file://0001-Remove-redundant-YYLOC-global-declaration.patch"
 SRCREV = "0353addb5507bb259c9232c8b23e3d604eebd878"
 
 S = "${WORKDIR}/git"
