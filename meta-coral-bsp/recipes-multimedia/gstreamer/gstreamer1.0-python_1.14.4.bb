@@ -21,7 +21,7 @@ S = "${WORKDIR}/${PNREAL}-${PV}"
 
 # gobject-introspection is mandatory and cannot be configured
 REQUIRED_DISTRO_FEATURES = "gobject-introspection-data"
-UNKNOWN_CONFIGURE_WHITELIST:append = " --enable-introspection --disable-introspection"
+UNKNOWN_CONFIGURE_OPT_IGNORE:append = " --enable-introspection --disable-introspection"
 
 inherit autotools pkgconfig distutils3-base upstream-version-is-even gobject-introspection distro_features_check
 
