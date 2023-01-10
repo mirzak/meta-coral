@@ -15,11 +15,11 @@ do_install () {
     install -m 644 ${S}/1CQ_QCA6174A_LEA_2.0/etc/bluetooth/firmware.conf ${D}${sysconfdir}/bluetooth
 
     # Install firmware files
-    install -d ${D}${base_libdir}
-    cp -r ${S}/1CQ_QCA6174A_LEA_2.0/lib/firmware ${D}${base_libdir}
+    install -d ${D}${nonarch_base_libdir}
+    cp -r ${S}/1CQ_QCA6174A_LEA_2.0/lib/firmware ${D}${nonarch_base_libdir}
 }
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/bluetooth/firmware.conf \
     ${nonarch_base_libdir}/firmware/qca6174 \
     ${nonarch_base_libdir}/firmware/wlan \
