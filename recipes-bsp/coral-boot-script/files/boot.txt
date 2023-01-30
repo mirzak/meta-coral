@@ -1,4 +1,4 @@
-fdt_addr=0x43000000
+fdt_addr=0x44000000
 image=Image
 script=boot.scr
 mmc_root="PARTUUID=70672ec3-5eee-49ff-b3b1-eb1fbd406bf5"
