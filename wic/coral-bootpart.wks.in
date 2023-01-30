@@ -14,7 +14,7 @@
 #   ${IMX_BOOT_SEEK} 32 or 33kiB, see reference manual
 #
 part u-boot --source rawcopy --sourceparams="file=imx-boot" --ondisk mmcblk --no-table --align ${IMX_BOOT_SEEK}
-part /boot --source bootimg-partition --ondisk mmcblk --fstype=ext4 --label boot --active --align 4096 --size 16
-part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 4096 --uuid=70672ec3-5eee-49ff-b3b1-eb1fbd406bf5
+part /boot --source bootimg-partition --ondisk mmcblk --fstype=ext4 --label boot --active --align 8192 --size 64
+part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 8192 --uuid=70672ec3-5eee-49ff-b3b1-eb1fbd406bf5
 
 bootloader --ptable gpt
