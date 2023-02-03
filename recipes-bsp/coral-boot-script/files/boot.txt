@@ -20,7 +20,7 @@ else
     setenv fdt_file imx8mq-phanbell.dtb
 fi
 
-cmdline="console=ttymxc0,115200 console=tty0 earlycon=ec_imx6q,0x30860000,115200 root=${root} rootfstype=ext4 rw rootwait init=/sbin/init net.ifnames=0 pci=pcie_bus_perf"
+cmdline="root=${root} rootfstype=ext4 rw rootwait net.ifnames=0 pci=pcie_bus_perf"
 
 ext2load mmc ${bootdev}:1 ${loadaddr} ${image}
 setenv bootargs ${cmdline} ${extra_bootargs}
