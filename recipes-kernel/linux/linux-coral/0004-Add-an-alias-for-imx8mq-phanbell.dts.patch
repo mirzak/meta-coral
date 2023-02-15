@@ -1,0 +1,26 @@
+From 262aed6a1fbe0e1bcad71e6572bebe54a64b21de Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Tue, 14 Feb 2023 12:54:50 -0800
+Subject: [PATCH 4/4] Add an alias for imx8mq-phanbell.dts
+
+Latest fsl kernel has renamed it so. This keeps this kernel working with
+newer yocto layers
+
+Upstream-Status: Inappropriate [OE-specific]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 120000 arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+new file mode 120000
+index 000000000000..2f3aa51ba095
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+@@ -0,0 +1 @@
++fsl-imx8mq-phanbell.dts
+\ No newline at end of file
+-- 
+2.39.2
+
