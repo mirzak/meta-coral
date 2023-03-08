@@ -1,0 +1,46 @@
+From 62ac8479d1a70e2c0ef04a06936e47987f04b180 Mon Sep 17 00:00:00 2001
+From: Ryosuke Saito <rsaito@redhat.com>
+Date: Sat, 2 Jan 2021 19:49:34 +0900
+Subject: [PATCH 18/21] spi: spi-imx: Revive cs-gpios property for DT
+
+The commit 881a0b993e9f ("spi: imx: GPIO based chip selects should not
+be required") completely removed the 'cs-gpios' property from DT, but
+still, one might require SS/CS lines to be configured as GPIO for some
+good reason (e.g., restriction of board I/O pin assignment).
+For that, let's revive the property again.
+
+Signed-off-by: Ryosuke Saito <rsaito@redhat.com>
+---
+ drivers/spi/spi-imx.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/drivers/spi/spi-imx.c b/drivers/spi/spi-imx.c
+index 91e32291c44e..4b0492bd0e00 100644
+--- a/drivers/spi/spi-imx.c
++++ b/drivers/spi/spi-imx.c
+@@ -1685,6 +1685,22 @@ static int spi_imx_probe(struct platform_device *pdev)
+ 		if (!of_property_read_u32(np, "num-cs", &num_cs))
+ 			master->num_chipselect = num_cs;
+ 		/* If not preset, default value of 1 is used */
++
++		if (of_find_property(np, "cs-gpios", NULL)) {
++			master->cs_gpios = devm_kcalloc(&master->dev,
++							master->num_chipselect,
++							sizeof(int), GFP_KERNEL);
++			if (!master->cs_gpios)
++				return -ENOMEM;
++
++			for (i = 0; i < master->num_chipselect; i++) {
++				ret = of_get_named_gpio(np, "cs-gpios", i);
++				if (ret < 0)
++					goto out_master_put;
++
++				master->cs_gpios[i] = ret;
++			}
++		}
+ 	}
+ 
+ 	spi_imx->bitbang.chipselect = spi_imx_chipselect;
+-- 
+2.39.2
+

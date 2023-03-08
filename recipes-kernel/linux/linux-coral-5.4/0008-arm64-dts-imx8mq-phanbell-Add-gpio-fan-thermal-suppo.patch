@@ -1,0 +1,124 @@
+From ee0824e83cf33f393a716fb5d93e877b9e430dd2 Mon Sep 17 00:00:00 2001
+From: Vitor Massaru Iha <vitor@massaru.org>
+Date: Mon, 2 Mar 2020 22:15:16 -0300
+Subject: [PATCH 08/21] arm64: dts: imx8mq-phanbell: Add gpio-fan/thermal
+ support
+
+It was based on Google Source Code for Coral Edge TPU Mendel release:
+https://coral.googlesource.com/linux-imx/
+
+It was tested on Coral Dev Board using this command:
+  sudo stress --cpu 4 --timeout 3600
+
+Signed-off-by: Vitor Massaru Iha <vitor@massaru.org>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ .../boot/dts/freescale/imx8mq-phanbell.dts    | 63 +++++++++++++++++++
+ arch/arm64/boot/dts/freescale/imx8mq.dtsi     |  2 +-
+ 2 files changed, 64 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+index 16ed13c44a47..1a04d01acc18 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+@@ -35,6 +35,16 @@
+ 		gpio = <&gpio2 19 GPIO_ACTIVE_HIGH>;
+ 		enable-active-high;
+ 	};
++
++	fan: gpio-fan {
++		compatible = "gpio-fan";
++		gpio-fan,speed-map = <0 0 8600 1>;
++		gpios = <&gpio3 5 GPIO_ACTIVE_HIGH>;
++		#cooling-cells = <2>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_gpio_fan>;
++		status = "okay";
++	};
+ };
+ 
+ &A53_0 {
+@@ -53,6 +63,53 @@
+ 	cpu-supply = <&buck2>;
+ };
+ 
++&cpu_thermal {
++	trips {
++		cpu_alert0: trip0 {
++			temperature = <75000>;
++			hysteresis = <2000>;
++			type = "passive";
++		};
++
++		cpu_alert1: trip1 {
++			temperature = <80000>;
++			hysteresis = <2000>;
++			type = "passive";
++		};
++
++		cpu_crit0: trip3 {
++			temperature = <90000>;
++			hysteresis = <2000>;
++			type = "critical";
++		};
++
++		fan_toggle0: trip4 {
++			temperature = <65000>;
++			hysteresis = <10000>;
++			type = "active";
++		};
++	};
++
++	cooling-maps {
++		map0 {
++			trip = <&cpu_alert0>;
++			cooling-device =
++			<&A53_0 0 1>; /* Exclude highest OPP */
++		};
++
++		map1 {
++			trip = <&cpu_alert1>;
++			cooling-device =
++			<&A53_0 0 2>; /* Exclude two highest OPPs */
++		};
++
++		map4 {
++			trip = <&fan_toggle0>;
++			cooling-device = <&fan 0 1>;
++		};
++	};
++};
++
+ &i2c1 {
+ 	clock-frequency = <400000>;
+ 	pinctrl-names = "default";
+@@ -295,6 +352,12 @@
+ 		>;
+ 	};
+ 
++	pinctrl_gpio_fan: gpiofangrp {
++		fsl,pins = <
++			MX8MQ_IOMUXC_NAND_CLE_GPIO3_IO5			0x16
++		>;
++	};
++
+ 	pinctrl_i2c1: i2c1grp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_I2C1_SCL_I2C1_SCL			0x4000007f
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq.dtsi b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+index b628a5369653..041ead56beea 100755
+--- a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+@@ -222,7 +222,7 @@
+ 	};
+ 
+ 	thermal-zones {
+-		cpu-thermal {
++		cpu_thermal: cpu-thermal {
+ 			polling-delay-passive = <250>;
+ 			polling-delay = <2000>;
+ 			thermal-sensors = <&tmu 0>;
+-- 
+2.39.2
+

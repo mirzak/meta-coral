@@ -1,0 +1,29 @@
+From 754c063fa38f0d4535e8d022f895e385728ca846 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
+Date: Mon, 30 Sep 2019 22:26:00 +0200
+Subject: [PATCH 01/21] regulator: bd718x7: Add MODULE_ALIAS()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This fixes device probing when built as a module
+
+Signed-off-by: Guido Günther <agx@sigxcpu.org>
+Link: https://lore.kernel.org/r/46ce3400e227dd88d51486c02a6152c9ec52acbb.1569875042.git.agx@sigxcpu.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/regulator/bd718x7-regulator.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/regulator/bd718x7-regulator.c b/drivers/regulator/bd718x7-regulator.c
+index bdab46a5c461..13a43eee2e46 100644
+--- a/drivers/regulator/bd718x7-regulator.c
++++ b/drivers/regulator/bd718x7-regulator.c
+@@ -1293,3 +1293,4 @@ module_platform_driver(bd718xx_regulator);
+ MODULE_AUTHOR("Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>");
+ MODULE_DESCRIPTION("BD71837/BD71847 voltage regulator driver");
+ MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:bd718xx-pmic");
+-- 
+2.39.2
+

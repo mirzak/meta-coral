@@ -1,0 +1,54 @@
+From 02b389837fff9bee4a0221513e7185277fa4ca92 Mon Sep 17 00:00:00 2001
+From: Ryosuke Saito <rsaito@redhat.com>
+Date: Mon, 9 Nov 2020 21:18:54 +0900
+Subject: [PATCH] arm64: dts: imx8mq: Set ext_osc to 1 as default
+
+Currently, imx8mq PCIe driver codes assume that the external clock
+generator is always used but e.g. imx8mq-phanbell board is an exception.
+Such boards have to be configured with the internal PLL as PCIe REF
+clock.
+
+Since there are many dts files which include imx8mq.dtsi without ext_osc
+set properly and use the external clock implicitly, instead of modifying
+all such dts files, set the default value of ext_osc to 1 to change the
+driver's behavior and be able for such exceptional boards to override it
+easily.
+
+This is not ideal though, makes fewer future conflicts for now.
+
+Signed-off-by: Ryosuke Saito <rsaito@redhat.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mq.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq.dtsi b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+index d53b658c736e..31d6dddbf50b 100755
+--- a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+@@ -1454,6 +1454,7 @@
+ 			                         <&clk IMX8MQ_SYS1_PLL_80M>;
+ 			assigned-clock-rates = <250000000>, <100000000>,
+ 			                       <10000000>;
++			ext_osc = <1>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -1485,6 +1486,7 @@
+ 				 <&src IMX8MQ_RESET_PCIE2_CTRL_APPS_CLK_REQ>,
+ 				 <&src IMX8MQ_RESET_PCIE2_CTRL_APPS_TURNOFF>;
+ 			reset-names = "pciephy", "apps", "clkreq", "turnoff";
++			ext_osc = <1>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -1512,6 +1514,7 @@
+ 			                       <10000000>;
+ 			num-ib-windows = <4>;
+ 			num-ob-windows = <4>;
++			ext_osc = <1>;
+ 			status = "disabled";
+ 		};
+ 
+-- 
+2.39.2
+
