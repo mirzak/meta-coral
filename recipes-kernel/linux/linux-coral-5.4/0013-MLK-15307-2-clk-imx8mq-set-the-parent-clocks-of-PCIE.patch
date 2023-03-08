@@ -1,0 +1,33 @@
+From e645d6b386a83843a36608ba3be7f864dfc06a91 Mon Sep 17 00:00:00 2001
+From: Richard Zhu <hongxing.zhu@nxp.com>
+Date: Wed, 21 Jun 2017 10:23:00 +0800
+Subject: [PATCH 13/21] MLK-15307-2 clk: imx8mq: set the parent clocks of PCIE
+
+Configure the parent clocks of PCIE.
+
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Signed-off-by: Ryosuke Saito <rsaito@redhat.com>
+---
+ drivers/clk/imx/clk-imx8mq.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/clk/imx/clk-imx8mq.c b/drivers/clk/imx/clk-imx8mq.c
+index f8aaed0712f2..7f7faa6cd9f9 100644
+--- a/drivers/clk/imx/clk-imx8mq.c
++++ b/drivers/clk/imx/clk-imx8mq.c
+@@ -612,6 +612,12 @@ static int imx8mq_clocks_probe(struct platform_device *pdev)
+ 	/* enable all the clocks just for bringup */
+ 	imx_clk_init_on(np, clks);
+ 
++	/* set pcie root's parent clk source */
++	clk_set_parent(clks[IMX8MQ_CLK_PCIE1_CTRL], clks[IMX8MQ_SYS2_PLL_250M]);
++	clk_set_parent(clks[IMX8MQ_CLK_PCIE1_PHY], clks[IMX8MQ_SYS2_PLL_100M]);
++	clk_set_parent(clks[IMX8MQ_CLK_PCIE2_CTRL], clks[IMX8MQ_SYS2_PLL_250M]);
++	clk_set_parent(clks[IMX8MQ_CLK_PCIE2_PHY], clks[IMX8MQ_SYS2_PLL_100M]);
++
+ 	clk_set_parent(clks[IMX8MQ_CLK_CSI1_CORE], clks[IMX8MQ_SYS1_PLL_266M]);
+ 	clk_set_parent(clks[IMX8MQ_CLK_CSI1_PHY_REF], clks[IMX8MQ_SYS2_PLL_1000M]);
+ 	clk_set_parent(clks[IMX8MQ_CLK_CSI1_ESC], clks[IMX8MQ_SYS1_PLL_800M]);
+-- 
+2.39.2
+

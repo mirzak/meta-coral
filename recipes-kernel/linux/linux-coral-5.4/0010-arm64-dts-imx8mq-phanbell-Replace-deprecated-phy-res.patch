@@ -1,0 +1,43 @@
+From 5df89084e49729eafa4eb8b7833674668086cf15 Mon Sep 17 00:00:00 2001
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Date: Sun, 23 Aug 2020 13:15:06 +0200
+Subject: [PATCH 10/21] arm64: dts: imx8mq-phanbell: Replace deprecated phy
+ reset properties
+
+Use preferred properties of phy node instead of deprecated
+phy-reset-gpios (and others).  This avoids copying deprecated code into
+future DTSes.
+
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+index 77ab568fae67..3f541ddf0768 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+@@ -262,9 +262,6 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_fec1>;
+ 	phy-mode = "rgmii-id";
+-	phy-reset-gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
+-	phy-reset-duration = <10>;
+-	phy-reset-post-delay = <50>;
+ 	phy-handle = <&ethphy0>;
+ 	fsl,magic-packet;
+ 	status = "okay";
+@@ -275,6 +272,9 @@
+ 		ethphy0: ethernet-phy@0 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
+ 			reg = <0>;
++			reset-gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
++			reset-assert-us = <10000>;
++			reset-deassert-us = <50000>;
+ 		};
+ 	};
+ };
+-- 
+2.39.2
+
