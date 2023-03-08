@@ -1,0 +1,37 @@
+From 71e58a267131a7ca719c647c7ec2be002010d5c6 Mon Sep 17 00:00:00 2001
+From: Ryosuke Saito <rsaito@redhat.com>
+Date: Sat, 2 Jan 2021 19:56:43 +0900
+Subject: [PATCH 20/21] arm64: dts: imx8mq-phanbell: Add gpio pinmux for 40-pin
+ header
+
+Add gpio pinmux for the 40-pin expansion header on the board.
+
+Signed-off-by: Ryosuke Saito <rsaito@redhat.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+index 386ef06d698d..47c55e986da0 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+@@ -409,6 +409,16 @@
+ 	pinctrl_hog: hoggrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_GPIO1_IO00_ANAMIX_REF_CLK_32K	0x05
++			MX8MQ_IOMUXC_GPIO1_IO06_GPIO1_IO6		0x19
++			MX8MQ_IOMUXC_GPIO1_IO07_GPIO1_IO7		0x19
++			MX8MQ_IOMUXC_GPIO1_IO08_GPIO1_IO8		0x19
++			MX8MQ_IOMUXC_NAND_DATA03_GPIO3_IO9		0x19
++			MX8MQ_IOMUXC_NAND_DATA07_GPIO3_IO13		0x19
++			MX8MQ_IOMUXC_NAND_READY_B_GPIO3_IO16		0x19
++			MX8MQ_IOMUXC_NAND_WE_B_GPIO3_IO17		0x19
++			MX8MQ_IOMUXC_ECSPI2_SCLK_GPIO5_IO10		0x19
++			MX8MQ_IOMUXC_ECSPI2_MISO_GPIO5_IO12		0x19
++			MX8MQ_IOMUXC_ECSPI2_SS0_GPIO5_IO13		0x19
+ 		>;
+ 	};
+ 
+-- 
+2.39.2
+

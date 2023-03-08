@@ -1,0 +1,78 @@
+From d7cc3d71a65a2f611efb98ed0c39f85b3d5263f6 Mon Sep 17 00:00:00 2001
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Date: Fri, 28 Aug 2020 18:47:46 +0200
+Subject: [PATCH 11/21] arm64: dts: imx8mq-phanbell: Align pin configuration
+ group names with schema
+
+Device tree schema expects pin configuration groups to end with 'grp'
+suffix, otherwise dtbs_check complain with a warning like:
+
+    ... do not match any of the regexes: 'grp$', 'pinctrl-[0-9]+'
+
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+index 3f541ddf0768..d6d3a3d5abc3 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+@@ -365,7 +365,7 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_pmic: pmicirq {
++	pinctrl_pmic: pmicirqgrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_GPIO1_IO03_GPIO1_IO3	0x41
+ 		>;
+@@ -395,7 +395,7 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
++	pinctrl_usdhc1_100mhz: usdhc1-100mhzgrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_SD1_CLK_USDHC1_CLK			0x85
+ 			MX8MQ_IOMUXC_SD1_CMD_USDHC1_CMD			0xc5
+@@ -412,7 +412,7 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_usdhc1_200mhz: usdhc1grp200mhz {
++	pinctrl_usdhc1_200mhz: usdhc1-200mhzgrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_SD1_CLK_USDHC1_CLK			0x87
+ 			MX8MQ_IOMUXC_SD1_CMD_USDHC1_CMD			0xc7
+@@ -429,7 +429,7 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_usdhc2_gpio: usdhc2grpgpio {
++	pinctrl_usdhc2_gpio: usdhc2gpiogrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_SD2_CD_B_GPIO2_IO12	0x41
+ 			MX8MQ_IOMUXC_SD2_RESET_B_GPIO2_IO19	0x41
+@@ -448,7 +448,7 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_usdhc2_100mhz: usdhc2grp100mhz {
++	pinctrl_usdhc2_100mhz: usdhc2-100mhzgrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_SD2_CLK_USDHC2_CLK			0x85
+ 			MX8MQ_IOMUXC_SD2_CMD_USDHC2_CMD			0xc5
+@@ -460,7 +460,7 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_usdhc2_200mhz: usdhc2grp200mhz {
++	pinctrl_usdhc2_200mhz: usdhc2-200mhzgrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_SD2_CLK_USDHC2_CLK			0x87
+ 			MX8MQ_IOMUXC_SD2_CMD_USDHC2_CMD			0xc7
+-- 
+2.39.2
+

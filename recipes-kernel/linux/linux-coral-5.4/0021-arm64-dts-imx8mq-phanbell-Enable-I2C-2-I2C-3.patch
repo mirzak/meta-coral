@@ -1,0 +1,61 @@
+From 324a26744442949fab8aa9aeafe2bae25e9d5707 Mon Sep 17 00:00:00 2001
+From: Ryosuke Saito <rsaito@redhat.com>
+Date: Fri, 23 Apr 2021 19:20:57 +0900
+Subject: [PATCH 21/21] arm64: dts: imx8mq-phanbell: Enable I2C-2/I2C-3
+
+Enable I2C-2/I2C-3 which can be used through Dev Board 40-pin header.
+
+Signed-off-by: Ryosuke Saito <rsaito@redhat.com>
+---
+ .../boot/dts/freescale/imx8mq-phanbell.dts    | 28 +++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+index 47c55e986da0..b50431ff5f33 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+@@ -279,6 +279,20 @@
+ 	};
+ };
+ 
++&i2c2 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c2>;
++	status = "okay";
++};
++
++&i2c3 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c3>;
++	status = "okay";
++};
++
+ &pcie0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_pcie0>;
+@@ -484,6 +498,20 @@
+ 		>;
+ 	};
+ 
++	pinctrl_i2c2: i2c2grp {
++		fsl,pins = <
++			MX8MQ_IOMUXC_I2C2_SCL_I2C2_SCL			0x4000007f
++			MX8MQ_IOMUXC_I2C2_SDA_I2C2_SDA			0x4000007f
++		>;
++	};
++
++	pinctrl_i2c3: i2c3grp {
++		fsl,pins = <
++			MX8MQ_IOMUXC_I2C3_SCL_I2C3_SCL			0x4000007f
++			MX8MQ_IOMUXC_I2C3_SDA_I2C3_SDA			0x4000007f
++		>;
++	};
++
+ 	pinctrl_pmic: pmicirqgrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_GPIO1_IO03_GPIO1_IO3	0x41
+-- 
+2.39.2
+

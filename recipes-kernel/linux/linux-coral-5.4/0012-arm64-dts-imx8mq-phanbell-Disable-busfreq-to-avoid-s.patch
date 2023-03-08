@@ -1,0 +1,32 @@
+From 8d652338e1944cafff83e1470b64ebd6232b577c Mon Sep 17 00:00:00 2001
+From: Ryosuke Saito <rsaito@redhat.com>
+Date: Thu, 22 Oct 2020 21:44:02 +0900
+Subject: [PATCH 12/21] arm64: dts: imx8mq-phanbell: Disable busfreq to avoid
+ system hang
+
+Avoid system hang on boot by disabling busfreq driver for i.MX8MQ
+Phanbell board.
+
+Signed-off-by: Ryosuke Saito <rsaito@redhat.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+index d6d3a3d5abc3..dc0270787f7b 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts
+@@ -20,6 +20,10 @@
+ 		reg = <0x00000000 0x40000000 0 0x40000000>;
+ 	};
+ 
++	busfreq {
++		status = "disabled";
++	};
++
+ 	pmic_osc: clock-pmic {
+ 		compatible = "fixed-clock";
+ 		#clock-cells = <0>;
+-- 
+2.39.2
+
