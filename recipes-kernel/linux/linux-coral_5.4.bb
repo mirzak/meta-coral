@@ -7,11 +7,11 @@ SUMMARY = "Linux Kernel provided and supported by Google for Coral Dev Board"
 
 DEPENDS += "lzop-native bc-native"
 
-LINUX_VERSION = "5.4.210"
+LINUX_VERSION = "5.4.237"
 
 FILESPATH =. "${FILE_DIRNAME}/${BPN}-5.4:"
 
-SRCREV = "f2663e3d184e8dc51cf925942ebbabecf8a29f17"
+SRCREV = "33630781929731d93d24c944689add3da38c8e93"
 SRC_URI = "\
     git://github.com/Freescale/linux-fslc;protocol=https;branch=5.4-2.3.x-imx \
     file://extra.cfg \
