@@ -16,6 +16,7 @@ SRC_URI = "\
     git://github.com/Freescale/linux-fslc;protocol=https;branch=5.4-2.3.x-imx \
     file://extra.cfg \
     file://wifi.cfg \
+    file://werror.cfg \
     file://0001-regulator-bd718x7-Add-MODULE_ALIAS.patch \
     file://0002-regulator-bd718x7-Simplify-the-code-by-removing-stru.patch \
     file://0003-mfd-Rohm-PMICs-Use-platform_device_id-to-match-MFD-s.patch \
