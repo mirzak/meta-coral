@@ -2,7 +2,11 @@ DESCRIPTION = "Coral U-Boot suppporting the Google Coral Dev board/SOM"
 require recipes-bsp/u-boot/u-boot-common.inc
 require recipes-bsp/u-boot/u-boot.inc
 
-DEPENDS += "flex-native bison-native coral-boot-script"
+DEPENDS += " \
+	flex-native \
+	bison-native \
+	${@oe.utils.conditional('UBOOT_ENV', '', 'coral-boot-script', '', d)} \
+	"
 
 PROVIDES += "u-boot"
 
